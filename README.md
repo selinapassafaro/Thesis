@@ -1,0 +1,1 @@
+The main code is NightAnalysis, via this the others are run too. For it all to work some functions from snipeso/AllWake and snipeso/chART are needed as well as the Fooof and eeglab toolboxes. Some Codes are based on codes by snipeso

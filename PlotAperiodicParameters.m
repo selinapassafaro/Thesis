@@ -1,6 +1,4 @@
 function PlotAperiodicParameters (Power, PowerStages, Info, Freqs, Labels, PlotProps, V, StatsP)
-% Für spectrumDiff (Teilnehmer, Sessionen, 
-
 Fieldnames = fieldnames(Power);
 FieldnamesV = fieldnames(V);
 
@@ -50,14 +48,6 @@ for i = 1:height(FieldnamesV)
     AktuellePower = PowerStages.N3.Whole;
     PowerN3(p, :, :) = squeeze(mean(AktuellePower(i, 1, :, :), 3));
     
-    try
-    %PlotProps.Line.Width = 0.5;
-    %figure
-    %plot_log_power(Powermat, Freqs)
-    %legend(string(p))
-    catch
-        a = 1;
-    end
 
     p = p +1;
     AktuellePower = Power.(Fieldnames{1});
@@ -70,15 +60,6 @@ for i = 1:height(FieldnamesV)
     PowerN2(p, :, :) = squeeze(mean(AktuellePower(i, 2, :, :), 3));
     AktuellePower = PowerStages.N3.Whole;
     PowerN3(p, :, :) = squeeze(mean(AktuellePower(i, 2, :, :), 3));
-    
-    try
-    %PlotProps.Line.Width = 0.5;
-    %figure
-    %spectrumDiff(squeeze(Powermat(p, :, :)), Freqs, 1, append('ADHD ')', [1,0,0], true, true, PlotProps, [], Labels, 1);
-    %legend(string(p))
-    catch
-        a = 1;
-    end
    
 
 end
@@ -149,6 +130,7 @@ ylim([10^-1, 700]);
 legend('ADHD', 'HC')
 
 
+
 %Plot Intervention vs. Sham %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PlotProps.Line.Width = 0.2;
 PlotProps.Line.Alpha = 0.3;
@@ -178,21 +160,46 @@ legend('Intervention', 'Sham');
 
 % Categories with Age %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [Group1, Group2, Group3, Group4, Group5] = getagegroups(Info);
-
+MeanYoung = Powermat(Group1 | Group2, :);
+MeanOld = Powermat(Group3 | Group4 | Group5, :);
 
 
 %Plot Age %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PlotProps.Line.Width = 4;
 PlotProps.Line.Alpha = 1;
 figure
-spectrumDiff(Powermat(logical(Group1)', :), Freqs, 1, append('8-9')', [3, 2, 252] / 255, true, PlotProps, [], Labels, '8-9');
-spectrumDiff(Powermat(logical(Group2)', :), Freqs, 1, append('10-11')', [42, 0, 213]/255, true, PlotProps, [], Labels, '10-11');
-spectrumDiff(Powermat(logical(Group3)', :), Freqs, 1, append('12-13')', [99, 0, 158] / 255, true, PlotProps, [], Labels, '12-13');
-spectrumDiff(Powermat(logical(Group4)', :), Freqs, 1, append('14-15')', [161, 1, 141] / 255, true, PlotProps, [], Labels, '14-15');
-spectrumDiff(Powermat(logical(Group5)', :), Freqs, 1, append('16-17')', [216, 0, 39]/255, true, PlotProps, [], Labels, '16-17');
+
+PlotProps.Line.Width = 0.2;
+PlotProps.Line.Alpha = 0.3;
+cmap5 = parula(5);
+
+for i = 1:height(Powermat)
+    if Group1(i) == 1
+        spectrumDiff(Powermat(i, :), Freqs, 1, append('8,9')', cmap5(1,:), true, PlotProps, [], Labels, []); %gelb
+    elseif Group2(i) == 1
+        spectrumDiff(Powermat(i, :), Freqs, 1, append('10,11')', cmap5(2,:), true, PlotProps, [], Labels, []);
+    elseif Group3(i) == 1
+        spectrumDiff(Powermat(i, :), Freqs, 1, append('12,13')', cmap5(3,:), true, PlotProps, [], Labels, []);
+    elseif Group4(i) == 1
+        spectrumDiff(Powermat(i, :), Freqs, 1, append('14,15')', cmap5(4,:), true, PlotProps, [], Labels, []);
+    elseif Group5(i) == 1
+        spectrumDiff(Powermat(i, :), Freqs, 1, append('16, 17')', cmap5(5,:), true, PlotProps, [], Labels, []); %blau
+    end
+end
+
+PlotProps.Line.Width = 4;
+PlotProps.Line.Alpha = 1;
+legend('AutoUpdate', 'off')
+spectrumDiff(mean(MeanYoung, 1), Freqs, 1, append('<11')', [0 0.4470 0.7410], true, PlotProps, [], Labels, '<11'); %blau
+spectrumDiff(mean(MeanOld, 1), Freqs, 1, append('>11'), [0.4660 0.6740 0.1880], true, PlotProps, [], Labels, '>11'); %grün
 ax = gca;
 ax.FontSize = 20;
 ax.XAxis.FontSize = 20;
 ax.YAxis.FontSize = 20;
 ylim([10^-1, 700]);
+
+legend('<11', '>11');
+
 legend('off')
+
+[h,p]= ttest(mean(MeanYoung, 1), mean(MeanOld, 1))

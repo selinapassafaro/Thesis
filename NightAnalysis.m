@@ -103,7 +103,7 @@ Groupnames.ADHD = ["Slopes", "Intercepts", "ADHD", "HC", "Power", "Freq"];
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plotting
 
-%% Spectrum (Ev. muss Power als Input)
+%% Spectrum
 
 PlotAperiodicParameters(PowerMatrix, PowerMatrixStages, ParticipantInfo, Freqs(1:42), Labels, PlotProps, V, StatsP);
 
